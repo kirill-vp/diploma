@@ -41,4 +41,10 @@ public class Dish extends BaseEntity {
         this.dishName = dishName;
         this.description = description;
     }
+    public Dish(String dishName, String description, Restaurant restaurant) {
+        this.dishName = dishName;
+        this.description = description;
+        this.restaurant = restaurant;
+
+    }
 }

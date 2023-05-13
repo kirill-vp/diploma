@@ -36,8 +36,9 @@ public class Vote extends BaseEntity {
     @JsonIgnore
     private User user;
 
-    public Vote(Integer id, LocalDateTime dateTime) {
-        super(id);
+    public Vote(Restaurant restaurant, User user, LocalDateTime dateTime) {
+        this.restaurant = restaurant;
+        this.user = user;
         this.dateTime = dateTime;
     }
 

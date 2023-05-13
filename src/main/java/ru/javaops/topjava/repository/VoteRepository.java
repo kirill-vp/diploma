@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
-public interface VoteRepository extends BaseRepository<Meal> {
+public interface VoteRepository extends BaseRepository<Vote> {
 
     @Query("SELECT v FROM Vote v WHERE v.user.id =:userId ORDER BY v.dateTime DESC")
     List<Vote> getAll(int userId);
 
-    @Query("SELECT v from Vote v WHERE v.user.id=:userId AND v.dateTime >= :startDate AND v.dateTime < :endDate ORDER BY v.dateTime DESC")
-    List<Vote> getBetweenHalfOpen(int userId, LocalDateTime startDate, LocalDateTime endDate);
+    @Query("SELECT v from Vote v WHERE v.dateTime >= :startDate AND v.dateTime < :endDate ORDER BY v.dateTime DESC")
+    List<Vote> getBetweenHalfOpen(LocalDateTime startDate, LocalDateTime endDate);
 
     @Query("SELECT v FROM Vote v WHERE v.id = :id and v.user.id = :userId")
     Optional<Vote> get(int userId, int id);
