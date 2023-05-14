@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "dish", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id"}, name = "dish_unique_restaurant_idx")})
+@Table(name = "dish")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,12 +22,12 @@ import java.time.LocalTime;
 public class Dish extends BaseEntity {
     @Column(name = "dish_name", nullable = false)
     @NotNull
-    @Range(min = 2, max = 60)
+    @Size(min = 2, max = 120)
     private String dishName;
 
     @Column(name = "description", nullable = false)
     @NotBlank
-    @Size(min = 2, max = 120)
+    @Size(min = 2, max = 220)
     @NoHtml
     private String description;
 

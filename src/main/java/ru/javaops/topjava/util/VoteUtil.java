@@ -20,7 +20,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @UtilityClass
-@AllArgsConstructor
 public class VoteUtil {
 
     private final RestaurantService restaurantService = null;
