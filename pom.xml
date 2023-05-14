@@ -11,8 +11,8 @@
     <groupId>ru.javaops</groupId>
     <artifactId>topjava-boot</artifactId>
     <version>1.0</version>
-    <name>TopJava Boot</name>
-    <description>Calories Management application (TopJava) Spring Boot migration</description>
+    <name>Vote Management Boot</name>
+    <description>Vote Management application</description>
 
     <properties>
         <java.version>17</java.version>

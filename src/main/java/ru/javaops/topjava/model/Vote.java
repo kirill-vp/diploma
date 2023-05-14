@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "vote", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date_time", "restaurant_id"}, name = "meal_unique_user_datetime_restaurant_idx")})
+@Table(name = "vote")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,6 +39,11 @@ public class Vote extends BaseEntity {
     public Vote(Restaurant restaurant, User user, LocalDateTime dateTime) {
         this.restaurant = restaurant;
         this.user = user;
+        this.dateTime = dateTime;
+    }
+    public Vote(Integer id, Restaurant restaurant, LocalDateTime dateTime) {
+        this.id = id;
+        this.restaurant = restaurant;
         this.dateTime = dateTime;
     }
 
