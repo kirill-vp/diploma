@@ -73,23 +73,23 @@ public class VoteController {
     public List<VoteTo> getAll(@AuthenticationPrincipal AuthUser authUser) {
         int userId = authUser.id();
         log.info("getAll for user {}", userId);
-        return repository.getAll(userId).stream().map(vote -> createTo(vote)).collect(Collectors.toList());
+        return repository.getAll(userId).stream().map(VoteUtil::createTo).collect(Collectors.toList());
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody VoteTo voteTo, @PathVariable int id) {
+    //@ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody VoteTo voteTo, @PathVariable int id) {
         int userId = authUser.id();
-        if (voteTo.getDateTime().isAfter(LocalDate.now().atStartOfDay()) && voteTo.getDateTime().isBefore(LocalDate.now().atTime(11, 0, 0))) {
+        if (LocalTime.now().isBefore(DEADLINE)) {
             log.info("update {} for user {}", voteTo, userId);
             assureIdConsistent(voteTo, id);
             Vote vote = repository.getExistedOrBelonged(userId, id);
             Restaurant restaurant = restaurantRepository.getExisted(voteTo.getRestaurantId());
             service.save(userId, VoteUtil.update(vote,voteTo.getDateTime(),restaurant));
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         log.info("it's too late for update {} for user {}", voteTo, userId);
-
-
+        return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
