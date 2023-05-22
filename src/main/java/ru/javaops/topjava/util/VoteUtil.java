@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class VoteUtil {
 
     public static VoteTo createTo(Vote vote) {
-        return new VoteTo(vote.getId(), vote.getDateTime(), vote.getRestaurant());
+        return new VoteTo(vote.getId(), vote.getDateTime(), vote.getRestaurant().getId());
     }
     public static Vote update(Vote vote, LocalDateTime localDateTime, Restaurant restaurant) {
         vote.setRestaurant(restaurant);
