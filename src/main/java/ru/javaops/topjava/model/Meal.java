@@ -19,7 +19,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(callSuper = true, exclude = {"user"})
+@ToString(callSuper = true)
 public class Meal extends BaseEntity {
 
     @Column(name = "date_time", nullable = false)
@@ -40,6 +40,7 @@ public class Meal extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
+    @ToString.Exclude
     private User user;
 
     public Meal(Integer id, LocalDateTime dateTime, String description, int calories) {

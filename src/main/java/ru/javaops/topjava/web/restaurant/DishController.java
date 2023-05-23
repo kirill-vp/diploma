@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.topjava.model.Dish;
 import ru.javaops.topjava.model.Restaurant;
+import ru.javaops.topjava.model.Role;
 import ru.javaops.topjava.repository.DishRepository;
 import ru.javaops.topjava.repository.RestaurantRepository;
 import ru.javaops.topjava.service.DishService;
@@ -44,11 +45,14 @@ public class DishController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@AuthenticationPrincipal AuthUser authUser, @PathVariable int restaurantId, @PathVariable int id) {
-        log.info("delete {} for user {}", id, authUser.id());
-        Dish dish = repository.getExistedOrBelonged(restaurantId, id);
-        repository.delete(dish);
+    public ResponseEntity<?> delete(@AuthenticationPrincipal AuthUser authUser, @PathVariable int restaurantId, @PathVariable int id) {
+        if (authUser.hasRole(Role.ADMIN)) {
+            log.info("delete {} for user {}", id, authUser.id());
+            Dish dish = repository.getExistedOrBelonged(restaurantId, id);
+            repository.delete(dish);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @GetMapping
@@ -59,28 +63,35 @@ public class DishController {
 
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@AuthenticationPrincipal AuthUser authUser, @PathVariable int restaurantId,  @Valid @RequestBody DishTo dishTo, @PathVariable int id) {
-        int userId = authUser.id();
-        log.info("update {} for restaurant {} for user {}", dishTo, restaurantId, userId);
-        assureIdConsistent(dishTo, id);
-        Dish dish = repository.getExistedOrBelonged(restaurantId, id);
-        Dish updated = DishUtil.updateFromTo(dish, dishTo);
-        service.save(restaurantId, updated);
+    public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser, @PathVariable int restaurantId,  @Valid @RequestBody DishTo dishTo, @PathVariable int id) {
+        if (authUser.hasRole(Role.ADMIN)) {
+            int userId = authUser.id();
+            log.info("update {} for restaurant {} for user {}", dishTo, restaurantId, userId);
+            assureIdConsistent(dishTo, id);
+            Dish dish = repository.getExistedOrBelonged(restaurantId, id);
+            Dish updated = DishUtil.updateFromTo(dish, dishTo);
+            service.save(restaurantId, updated);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Dish> createWithLocation(@AuthenticationPrincipal AuthUser authUser, @PathVariable int restaurantId, @Valid @RequestBody DishTo dishTo) {
-        int userId = authUser.id();
-        log.info("create {} for restarant {} for user {}", dishTo, restaurantId, userId);
-        checkNew(dishTo);
-        Restaurant restaurant = restaurantRepository.getExisted(restaurantId);
-        Dish dish = new Dish(dishTo.getDishName(), dishTo.getDescription(), restaurant);
-        Dish created = service.save(restaurantId, dish);
-        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL + "/{id}")
-                .buildAndExpand(created.getId()).toUri();
-        return ResponseEntity.created(uriOfNewResource).body(created);
+        if (authUser.hasRole(Role.ADMIN)) {
+            int userId = authUser.id();
+            log.info("create {} for restaurant {} for user {}", dishTo, restaurantId, userId);
+            checkNew(dishTo);
+            Restaurant restaurant = restaurantRepository.getExisted(restaurantId);
+            Dish dish = new Dish(dishTo.getDishName(), dishTo.getDescription(), restaurant);
+            Dish created = service.save(restaurantId, dish);
+            URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path(REST_URL + "/{id}")
+                    .buildAndExpand(created.getId()).toUri();
+            return ResponseEntity.created(uriOfNewResource).body(created);
+        }
+        return new  ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
     }
 
 

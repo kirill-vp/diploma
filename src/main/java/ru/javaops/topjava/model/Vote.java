@@ -19,7 +19,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(callSuper = true, exclude = {"user"})
+@ToString(callSuper = true)
 public class Vote extends BaseEntity {
 
     @Column(name = "date_time", nullable = false)
@@ -29,11 +29,13 @@ public class Vote extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @JsonIgnore
+    @ToString.Exclude
     private Restaurant restaurant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
+    @ToString.Exclude
     private User user;
 
     public Vote(Restaurant restaurant, User user, LocalDateTime dateTime) {

@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "dish")
+@Table(name = "dish", uniqueConstraints = {@UniqueConstraint(columnNames = {"dish_name", "restaurant_id"}, name = "dish_unique_user_datetime_idx")})
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(callSuper = true, exclude = {"restaurant"})
+@ToString(callSuper = true)
 public class Dish extends BaseEntity {
     @Column(name = "dish_name", nullable = false)
     @NotNull
@@ -34,6 +34,7 @@ public class Dish extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @JsonIgnore
+    @ToString.Exclude
     private Restaurant restaurant;
 
     public Dish(Integer id, String dishName, String description) {

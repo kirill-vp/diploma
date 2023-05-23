@@ -13,6 +13,8 @@ import ru.javaops.topjava.util.JsonUtil;
 import ru.javaops.topjava.util.UsersUtil;
 import ru.javaops.topjava.web.AbstractControllerTest;
 
+import java.util.List;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;

@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.topjava.model.Restaurant;
+import ru.javaops.topjava.model.Role;
 import ru.javaops.topjava.repository.RestaurantRepository;
 import ru.javaops.topjava.service.RestaurantService;
 import ru.javaops.topjava.to.RestaurantTo;
@@ -36,16 +37,20 @@ public class RestaurantController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Restaurant> get(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
-        log.info("get restaurant {} for user {}", id, authUser.id());
-        return ResponseEntity.of(repository.get(id));
+            log.info("get restaurant {} for user {}", id, authUser.id());
+            return ResponseEntity.of(repository.get(id));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
-        log.info("delete {} for user {}", id, authUser.id());
-        Restaurant restaurant = repository.getExisted(id);
-        repository.delete(restaurant);
+    //@ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<?> delete(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
+        if (authUser.hasRole(Role.ADMIN)) {
+            log.info("delete {} for user {}", id, authUser.id());
+            Restaurant restaurant = repository.getExisted(id);
+            repository.delete(restaurant);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @GetMapping
@@ -56,24 +61,32 @@ public class RestaurantController {
 
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody Restaurant restaurant, @PathVariable int id) {
-        int userId = authUser.id();
-        log.info("update {} for user {}", restaurant, userId);
-        assureIdConsistent(restaurant, id);
-        service.save(restaurant);
+    //@ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody Restaurant restaurant, @PathVariable int id) {
+        if (authUser.hasRole(Role.ADMIN)) {
+            int userId = authUser.id();
+            log.info("update {} for user {}", restaurant, userId);
+            assureIdConsistent(restaurant, id);
+            service.save(restaurant);
+            return new ResponseEntity(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Restaurant> createWithLocation(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody Restaurant restaurant) {
-        int userId = authUser.id();
-        log.info("create {} for user {}", restaurant, userId);
-        checkNew(restaurant);
-        Restaurant created = service.save(restaurant);
-        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL + "/{id}")
-                .buildAndExpand(created.getId()).toUri();
-        return ResponseEntity.created(uriOfNewResource).body(created);
+        if (authUser.hasRole(Role.ADMIN)) {
+            int userId = authUser.id();
+            log.info("create {} for user {}", restaurant, userId);
+            checkNew(restaurant);
+            Restaurant created = service.save(restaurant);
+            URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path(REST_URL + "/{id}")
+                    .buildAndExpand(created.getId()).toUri();
+            return ResponseEntity.created(uriOfNewResource).body(created);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
     }
 
 }

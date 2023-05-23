@@ -110,7 +110,7 @@ public class VoteController {
             return ResponseEntity.created(uriOfNewResource).body(created);
         }
         else {
-            return new  ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            return new  ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 

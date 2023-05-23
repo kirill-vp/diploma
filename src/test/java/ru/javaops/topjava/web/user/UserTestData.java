@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javaops.topjava.web.meal.MealTestData.*;
 
 public class UserTestData {
-    public static final MatcherFactory.Matcher<User> USER_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered", "meals", "password");
+    public static final MatcherFactory.Matcher<User> USER_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered", "meals", "password", "votes");
     public static MatcherFactory.Matcher<User> USER_WITH_MEALS_MATCHER =
             MatcherFactory.usingAssertions(User.class,
                     //     No need use ignoringAllOverriddenEquals, see https://assertj.github.io/doc/#breaking-changes
