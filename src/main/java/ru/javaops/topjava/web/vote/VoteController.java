@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 import static ru.javaops.topjava.util.DateTimeUtil.atStartOfDayOrMin;
 import static ru.javaops.topjava.util.DateTimeUtil.atStartOfNextDayOrMax;
-import static ru.javaops.topjava.util.VoteUtil.createTo;
 import static ru.javaops.topjava.util.validation.ValidationUtil.assureIdConsistent;
 
 
@@ -54,19 +53,17 @@ public class VoteController {
     }
 
     @DeleteMapping("/{id}")
-    //@ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> delete(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
         if (LocalTime.now().isBefore(DEADLINE)) {
             int userId = authUser.id();
             log.info("delete {} for user {}", id, userId);
             Vote vote = repository.getExistedOrBelonged(authUser.id(), id);
-            repository.delete(vote);
-            return new ResponseEntity<>(HttpStatus.OK);
+            if (vote.getDate().isEqual(LocalDate.now())) {
+                repository.delete(vote);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
         }
-        else {
-            return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
-        }
-
+        return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
     @GetMapping
@@ -84,9 +81,11 @@ public class VoteController {
             log.info("update {} for user {}", voteTo, userId);
             assureIdConsistent(voteTo, id);
             Vote vote = repository.getExistedOrBelonged(userId, id);
-            Restaurant restaurant = restaurantRepository.getExisted(voteTo.getRestaurantId());
-            service.save(userId, VoteUtil.update(vote,voteTo.getDateTime(),restaurant));
-            return new ResponseEntity<>(HttpStatus.OK);
+            if (vote.getDate().isEqual(LocalDate.now())) {
+                Restaurant restaurant = restaurantRepository.getExisted(voteTo.getRestaurantId());
+                service.save(userId, VoteUtil.update(vote,voteTo.getDateTime(),restaurant));
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
         }
         log.info("it's too late for update {} for user {}", voteTo, userId);
         return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
@@ -95,9 +94,6 @@ public class VoteController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Vote> createWithLocation(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody Integer restaurantId) {
         int userId = authUser.id();
-        //int restaurantId = voteTo.getRestaurantId();
-
-
         if (repository.getBetweenHalfOpenForUser(userId, atStartOfDayOrMin(LocalDate.now()), atStartOfNextDayOrMax(LocalDate.now())).isEmpty()) {
             log.info("create {} for user {}", restaurantId, userId);
             Restaurant restaurant = restaurantRepository.getExisted(restaurantId);
