@@ -3,12 +3,8 @@ package ru.javaops.topjava.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.validator.constraints.Range;
-import ru.javaops.topjava.util.validation.NoHtml;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

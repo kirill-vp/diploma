@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static ru.javaops.topjava.web.meal.MealTestData.*;
+
 
 public class UserTestData {
     public static final MatcherFactory.Matcher<User> USER_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered", "meals", "password", "votes");
@@ -35,10 +35,7 @@ public class UserTestData {
     public static final User admin = new User(ADMIN_ID, "Admin", ADMIN_MAIL, "admin", 1900, Role.ADMIN, Role.USER);
     public static final User guest = new User(GUEST_ID, "Guest", GUEST_MAIL, "guest", 2000);
 
-    static {
-        user.setMeals(meals);
-        admin.setMeals(List.of(adminMeal2, adminMeal1));
-    }
+
 
     public static User getNew() {
         return new User(null, "New", "new@gmail.com", "newPass", 1555, false, new Date(), Collections.singleton(Role.USER));

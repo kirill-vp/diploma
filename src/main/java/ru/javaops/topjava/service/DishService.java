@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javaops.topjava.model.Dish;
-import ru.javaops.topjava.model.Meal;
 import ru.javaops.topjava.repository.DishRepository;
-import ru.javaops.topjava.repository.MealRepository;
 import ru.javaops.topjava.repository.RestaurantRepository;
-import ru.javaops.topjava.repository.UserRepository;
 
 @Service
 @AllArgsConstructor

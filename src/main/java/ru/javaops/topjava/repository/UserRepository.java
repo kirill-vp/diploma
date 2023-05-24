@@ -1,6 +1,5 @@
 package ru.javaops.topjava.repository;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javaops.topjava.error.NotFoundException;

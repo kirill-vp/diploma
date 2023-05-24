@@ -2,8 +2,6 @@ package ru.javaops.topjava.repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
-
-import ru.javaops.topjava.model.Meal;
 import ru.javaops.topjava.model.Restaurant;
 
 import java.util.List;

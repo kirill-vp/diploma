@@ -13,8 +13,6 @@ import ru.javaops.topjava.util.JsonUtil;
 import ru.javaops.topjava.util.UsersUtil;
 import ru.javaops.topjava.web.AbstractControllerTest;
 
-import java.util.List;
-
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -83,16 +81,6 @@ class ProfileControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(containsString(EXCEPTION_DUPLICATE_EMAIL)));
-    }
-
-    @Test
-    @WithUserDetails(value = USER_MAIL)
-    void getWithMeals() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/with-meals"))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(USER_WITH_MEALS_MATCHER.contentJson(user));
     }
 
     @Test

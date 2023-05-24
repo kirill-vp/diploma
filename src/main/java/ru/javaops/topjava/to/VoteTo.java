@@ -2,7 +2,6 @@ package ru.javaops.topjava.to;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
-import ru.javaops.topjava.model.Restaurant;
 
 import java.time.LocalDateTime;
 

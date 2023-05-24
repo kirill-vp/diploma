@@ -3,7 +3,6 @@ package ru.javaops.topjava.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javaops.topjava.error.DataConflictException;
-import ru.javaops.topjava.model.Meal;
 import ru.javaops.topjava.model.Vote;
 
 import java.time.LocalDateTime;

@@ -1,11 +1,7 @@
 package ru.javaops.topjava.web.vote;
 
-import ru.javaops.topjava.model.Meal;
 import ru.javaops.topjava.model.Restaurant;
 import ru.javaops.topjava.model.Vote;
-import ru.javaops.topjava.repository.RestaurantRepository;
-import ru.javaops.topjava.service.RestaurantService;
-import ru.javaops.topjava.to.MealTo;
 import ru.javaops.topjava.to.VoteTo;
 import ru.javaops.topjava.web.MatcherFactory;
 
