@@ -73,12 +73,6 @@ public class User extends NamedEntity implements HasIdAndEmail, Serializable {
     @OrderBy("dateTime DESC")
     @OnDelete(action = OnDeleteAction.CASCADE) //https://stackoverflow.com/a/44988100/548473
     @Schema(hidden = true)
-    private List<Meal> meals;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")//, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @OrderBy("dateTime DESC")
-    @OnDelete(action = OnDeleteAction.CASCADE) //https://stackoverflow.com/a/44988100/548473
-    @Schema(hidden = true)
     private List<Vote> votes;
 
     public User(User u) {

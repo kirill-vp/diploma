@@ -14,7 +14,6 @@ import ru.javaops.topjava.model.User;
 import ru.javaops.topjava.model.Vote;
 import ru.javaops.topjava.repository.RestaurantRepository;
 import ru.javaops.topjava.repository.VoteRepository;
-import ru.javaops.topjava.service.VoteService;
 import ru.javaops.topjava.to.VoteTo;
 import ru.javaops.topjava.util.VoteUtil;
 import ru.javaops.topjava.web.AuthUser;
@@ -40,8 +39,6 @@ public class VoteController {
 
     private final VoteRepository repository;
     private final RestaurantRepository restaurantRepository;
-    private final VoteService service;
-
     static final LocalTime DEADLINE = LocalTime.of(11, 0);
 
 
@@ -74,7 +71,6 @@ public class VoteController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody VoteTo voteTo, @PathVariable int id) {
         int userId = authUser.id();
         if (LocalTime.now().isBefore(DEADLINE)) {
@@ -83,8 +79,9 @@ public class VoteController {
             Vote vote = repository.getExistedOrBelonged(userId, id);
             if (vote.getDate().isEqual(LocalDate.now())) {
                 Restaurant restaurant = restaurantRepository.getExisted(voteTo.getRestaurantId());
-                service.save(userId, VoteUtil.update(vote,voteTo.getDateTime(),restaurant));
-                return new ResponseEntity<>(HttpStatus.OK);
+                Vote updated = VoteUtil.update(vote,LocalDateTime.now(),restaurant);
+                repository.save(updated);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
         }
         log.info("it's too late for update {} for user {}", voteTo, userId);
@@ -99,7 +96,7 @@ public class VoteController {
             Restaurant restaurant = restaurantRepository.getExisted(restaurantId);
             User user = authUser.getUser();
             Vote vote = new Vote(restaurant, user, LocalDateTime.now());
-            Vote created = service.save(userId, vote);
+            Vote created = repository.save(vote);
             URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(REST_URL + "/{id}")
                     .buildAndExpand(created.getId()).toUri();

@@ -14,7 +14,6 @@ import ru.javaops.topjava.model.Restaurant;
 import ru.javaops.topjava.model.Role;
 import ru.javaops.topjava.repository.DishRepository;
 import ru.javaops.topjava.repository.RestaurantRepository;
-import ru.javaops.topjava.service.DishService;
 import ru.javaops.topjava.to.DishTo;
 import ru.javaops.topjava.util.DishUtil;
 import ru.javaops.topjava.web.AuthUser;
@@ -23,7 +22,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.javaops.topjava.util.DishUtil.createTo;
 import static ru.javaops.topjava.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.javaops.topjava.util.validation.ValidationUtil.checkNew;
 
@@ -36,7 +34,7 @@ public class DishController {
 
     private final DishRepository repository;
     private final RestaurantRepository restaurantRepository;
-    private final DishService service;
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Dish> get(@AuthenticationPrincipal AuthUser authUser, @PathVariable int restaurantId, @PathVariable int id) {
@@ -56,9 +54,9 @@ public class DishController {
     }
 
     @GetMapping
-    public List<DishTo> getAll(@AuthenticationPrincipal AuthUser authUser, @PathVariable int restaurantId) {
+    public List<DishTo> getAll(@PathVariable int restaurantId) {
         log.info("getAll for restaurant {}", restaurantId);
-        return repository.getAll(restaurantId).stream().map(dish -> createTo(dish)).collect(Collectors.toList());
+        return repository.getAll(restaurantId).stream().map(DishUtil::createTo).collect(Collectors.toList());
     }
 
 
@@ -70,7 +68,7 @@ public class DishController {
             assureIdConsistent(dishTo, id);
             Dish dish = repository.getExistedOrBelonged(restaurantId, id);
             Dish updated = DishUtil.updateFromTo(dish, dishTo);
-            service.save(restaurantId, updated);
+            repository.save(updated);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -84,7 +82,7 @@ public class DishController {
             checkNew(dishTo);
             Restaurant restaurant = restaurantRepository.getExisted(restaurantId);
             Dish dish = new Dish(dishTo.getDishName(), dishTo.getDescription(), restaurant);
-            Dish created = service.save(restaurantId, dish);
+            Dish created = repository.save(dish);
             URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(REST_URL + "/{id}")
                     .buildAndExpand(created.getId()).toUri();

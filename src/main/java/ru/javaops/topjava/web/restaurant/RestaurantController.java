@@ -12,8 +12,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.topjava.model.Restaurant;
 import ru.javaops.topjava.model.Role;
 import ru.javaops.topjava.repository.RestaurantRepository;
-import ru.javaops.topjava.service.RestaurantService;
 import ru.javaops.topjava.to.RestaurantTo;
+import ru.javaops.topjava.util.RestaurantUtil;
 import ru.javaops.topjava.web.AuthUser;
 
 import java.net.URI;
@@ -31,9 +31,9 @@ import static ru.javaops.topjava.util.validation.ValidationUtil.checkNew;
 public class RestaurantController {
     static final String REST_URL = "/api/restaurants";
 
-    //private final MealRepository repository;
+
     private final RestaurantRepository repository;
-    private final RestaurantService service;
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Restaurant> get(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
@@ -56,19 +56,18 @@ public class RestaurantController {
     @GetMapping
     public List<RestaurantTo> getAll(@AuthenticationPrincipal AuthUser authUser) {
         log.info("getAll for user {}", authUser.id());
-        return repository.getAll().stream().map(restaurant -> createTo(restaurant)).collect(Collectors.toList());
+        return repository.getAll().stream().map(RestaurantUtil::createTo).collect(Collectors.toList());
     }
 
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //@ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody Restaurant restaurant, @PathVariable int id) {
         if (authUser.hasRole(Role.ADMIN)) {
             int userId = authUser.id();
             log.info("update {} for user {}", restaurant, userId);
             assureIdConsistent(restaurant, id);
-            service.save(restaurant);
-            return new ResponseEntity(HttpStatus.OK);
+            repository.save(restaurant);
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -79,7 +78,7 @@ public class RestaurantController {
             int userId = authUser.id();
             log.info("create {} for user {}", restaurant, userId);
             checkNew(restaurant);
-            Restaurant created = service.save(restaurant);
+            Restaurant created = repository.save(restaurant);
             URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(REST_URL + "/{id}")
                     .buildAndExpand(created.getId()).toUri();
